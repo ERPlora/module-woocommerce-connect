@@ -1,0 +1,91 @@
+{% load djicons i18n %}
+
+<div class="p-4">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold">{% trans "Settings" %}</h1>
+        <p class="text-sm mt-1 opacity-60">{% trans "WooCommerce sync configuration" %}</p>
+    </div>
+
+    {% if saved %}
+    <div class="callout callout-success mb-4">
+        <div class="callout-icon">{% icon "checkmark-circle-outline" %}</div>
+        <div class="callout-content">
+            <span class="callout-text">{% trans "Settings saved successfully." %}</span>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if connection %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{% icon "settings-outline" css_class="text-primary" %} {% trans "Sync Settings" %}</h3>
+        </div>
+        <div class="card-body">
+            <form hx-post="{% url 'woocommerce_connect:settings' %}"
+                  hx-target="#main-content-area"
+                  class="space-y-4">
+                {% csrf_token %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="label">{{ form.sync_direction.label }}</label>
+                        {{ form.sync_direction }}
+                    </div>
+                    <div>
+                        <label class="label">{{ form.source_of_truth.label }}</label>
+                        {{ form.source_of_truth }}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="label">{{ form.sync_interval_minutes.label }}</label>
+                    {{ form.sync_interval_minutes }}
+                </div>
+
+                <div class="divider"></div>
+                <h4 class="text-sm font-semibold mb-2">{% trans "Auto-sync Options" %}</h4>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        {{ form.auto_sync_products }}
+                        <span>{{ form.auto_sync_products.label }}</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        {{ form.auto_sync_orders }}
+                        <span>{{ form.auto_sync_orders.label }}</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        {{ form.auto_sync_customers }}
+                        <span>{{ form.auto_sync_customers.label }}</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        {{ form.auto_sync_inventory }}
+                        <span>{{ form.auto_sync_inventory.label }}</span>
+                    </label>
+                </div>
+
+                <div class="divider"></div>
+
+                <label class="flex items-center gap-3 cursor-pointer">
+                    {{ form.price_includes_tax }}
+                    <span>{{ form.price_includes_tax.label }}</span>
+                </label>
+
+                <div class="flex justify-end">
+                    <button type="submit" class="btn color-primary">
+                        {% icon "save-outline" %}
+                        {% trans "Save Settings" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <div class="callout callout-warning">
+        <div class="callout-icon">{% icon "warning-outline" %}</div>
+        <div class="callout-content">
+            <span class="callout-text">{% trans "Connect to a WooCommerce store first to configure sync settings." %}</span>
+        </div>
+    </div>
+    {% endif %}
+</div>

@@ -1,0 +1,64 @@
+{% load djicons i18n %}
+
+{% if mappings %}
+<div class="datatable">
+    <table>
+        <thead>
+            <tr>
+                <th>{% trans "Entity Type" %}</th>
+                <th>{% trans "Local ID" %}</th>
+                <th>{% trans "Remote ID" %}</th>
+                <th>{% trans "Direction" %}</th>
+                <th>{% trans "Last Synced" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mapping in mappings %}
+            <tr>
+                <td><span class="badge badge-sm">{{ mapping.entity_type }}</span></td>
+                <td class="font-mono text-xs">{{ mapping.local_id|truncatechars:12 }}</td>
+                <td class="font-mono text-xs">{{ mapping.remote_id }}</td>
+                <td>{{ mapping.get_sync_direction_display }}</td>
+                <td>
+                    {% if mapping.last_synced_at %}
+                        {{ mapping.last_synced_at|timesince }} {% trans "ago" %}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if page_obj.has_other_pages %}
+<div class="flex justify-center p-4">
+    <div class="btn-group">
+        {% if page_obj.has_previous %}
+        <button class="btn btn-sm"
+                hx-get="{% url 'woocommerce_connect:mapping' %}?page={{ page_obj.previous_page_number }}"
+                hx-target="#datatable-body">
+            {% icon "chevron-back-outline" %}
+        </button>
+        {% endif %}
+        <span class="btn btn-sm">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <button class="btn btn-sm"
+                hx-get="{% url 'woocommerce_connect:mapping' %}?page={{ page_obj.next_page_number }}"
+                hx-target="#datatable-body">
+            {% icon "chevron-forward-outline" %}
+        </button>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+<div class="card-body">
+    <div class="p-6 text-center text-base-content/50">
+        {% icon "git-compare-outline" css_class="text-3xl mb-2" %}
+        <p class="text-sm">{% trans "No entity mappings yet. Connect and sync to create mappings." %}</p>
+    </div>
+</div>
+{% endif %}

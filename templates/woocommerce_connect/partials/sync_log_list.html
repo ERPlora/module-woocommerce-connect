@@ -1,0 +1,70 @@
+{% load djicons i18n %}
+
+{% if logs %}
+<div class="datatable">
+    <table>
+        <thead>
+            <tr>
+                <th>{% trans "Entity" %}</th>
+                <th>{% trans "Action" %}</th>
+                <th>{% trans "Status" %}</th>
+                <th>{% trans "Direction" %}</th>
+                <th>{% trans "Duration" %}</th>
+                <th>{% trans "Date" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.entity_type }}</td>
+                <td>{{ log.action }}</td>
+                <td>
+                    {% if log.status == 'completed' %}
+                        <span class="badge badge-sm color-success">{{ log.status }}</span>
+                    {% elif log.status == 'failed' %}
+                        <span class="badge badge-sm color-error">{{ log.status }}</span>
+                    {% elif log.status == 'processing' %}
+                        <span class="badge badge-sm color-warning">{{ log.status }}</span>
+                    {% else %}
+                        <span class="badge badge-sm">{{ log.status }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ log.direction|default:"-" }}</td>
+                <td>{% if log.duration_ms %}{{ log.duration_ms }}ms{% else %}-{% endif %}</td>
+                <td>{{ log.created_at|timesince }} {% trans "ago" %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if page_obj.has_other_pages %}
+<div class="flex justify-center p-4">
+    <div class="btn-group">
+        {% if page_obj.has_previous %}
+        <button class="btn btn-sm"
+                hx-get="{% url 'woocommerce_connect:log' %}?page={{ page_obj.previous_page_number }}"
+                hx-target="#datatable-body">
+            {% icon "chevron-back-outline" %}
+        </button>
+        {% endif %}
+        <span class="btn btn-sm">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <button class="btn btn-sm"
+                hx-get="{% url 'woocommerce_connect:log' %}?page={{ page_obj.next_page_number }}"
+                hx-target="#datatable-body">
+            {% icon "chevron-forward-outline" %}
+        </button>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+<div class="card-body">
+    <div class="p-6 text-center text-base-content/50">
+        {% icon "list-outline" css_class="text-3xl mb-2" %}
+        <p class="text-sm">{% trans "No sync log entries yet." %}</p>
+    </div>
+</div>
+{% endif %}

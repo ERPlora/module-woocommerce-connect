@@ -1,0 +1,43 @@
+{% load djicons i18n %}
+
+<div class="p-4">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold">{% trans "Mapping" %}</h1>
+        <p class="text-sm mt-1 opacity-60">{% trans "Entity mappings between ERPlora and WooCommerce" %}</p>
+    </div>
+
+    {% if mapping_stats %}
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        {% for stat in mapping_stats %}
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="text-xs opacity-60 mb-1">{{ stat.entity_type }}</div>
+                <div class="text-xl font-semibold">{{ stat.count }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{% icon "git-compare-outline" css_class="text-primary" %} {% trans "Mapped Entities" %}</h3>
+            <div class="flex gap-2">
+                <select name="entity_type" class="select select-sm"
+                        hx-get="{% url 'woocommerce_connect:mapping' %}"
+                        hx-target="#datatable-body"
+                        hx-include="[name='q']">
+                    <option value="">{% trans "All types" %}</option>
+                    <option value="products" {% if entity_filter == 'products' %}selected{% endif %}>{% trans "Products" %}</option>
+                    <option value="categories" {% if entity_filter == 'categories' %}selected{% endif %}>{% trans "Categories" %}</option>
+                    <option value="customers" {% if entity_filter == 'customers' %}selected{% endif %}>{% trans "Customers" %}</option>
+                    <option value="orders" {% if entity_filter == 'orders' %}selected{% endif %}>{% trans "Orders" %}</option>
+                    <option value="inventory" {% if entity_filter == 'inventory' %}selected{% endif %}>{% trans "Inventory" %}</option>
+                </select>
+            </div>
+        </div>
+        <div id="datatable-body">
+            {% include "woocommerce_connect/partials/mapping_list.html" %}
+        </div>
+    </div>
+</div>

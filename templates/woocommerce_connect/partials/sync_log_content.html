@@ -1,0 +1,40 @@
+{% load djicons i18n %}
+
+<div class="p-4">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold">{% trans "Sync Log" %}</h1>
+        <p class="text-sm mt-1 opacity-60">{% trans "History of synchronization operations" %}</p>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{% icon "list-outline" css_class="text-primary" %} {% trans "Log Entries" %}</h3>
+            <div class="flex gap-2">
+                <select name="entity_type" class="select select-sm"
+                        hx-get="{% url 'woocommerce_connect:log' %}"
+                        hx-target="#datatable-body"
+                        hx-include="[name='q'],[name='status']">
+                    <option value="">{% trans "All entities" %}</option>
+                    <option value="products" {% if entity_filter == 'products' %}selected{% endif %}>{% trans "Products" %}</option>
+                    <option value="categories" {% if entity_filter == 'categories' %}selected{% endif %}>{% trans "Categories" %}</option>
+                    <option value="customers" {% if entity_filter == 'customers' %}selected{% endif %}>{% trans "Customers" %}</option>
+                    <option value="orders" {% if entity_filter == 'orders' %}selected{% endif %}>{% trans "Orders" %}</option>
+                    <option value="inventory" {% if entity_filter == 'inventory' %}selected{% endif %}>{% trans "Inventory" %}</option>
+                </select>
+                <select name="status" class="select select-sm"
+                        hx-get="{% url 'woocommerce_connect:log' %}"
+                        hx-target="#datatable-body"
+                        hx-include="[name='q'],[name='entity_type']">
+                    <option value="">{% trans "All statuses" %}</option>
+                    <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>{% trans "Completed" %}</option>
+                    <option value="failed" {% if status_filter == 'failed' %}selected{% endif %}>{% trans "Failed" %}</option>
+                    <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>{% trans "Pending" %}</option>
+                    <option value="processing" {% if status_filter == 'processing' %}selected{% endif %}>{% trans "Processing" %}</option>
+                </select>
+            </div>
+        </div>
+        <div id="datatable-body">
+            {% include "woocommerce_connect/partials/sync_log_list.html" %}
+        </div>
+    </div>
+</div>

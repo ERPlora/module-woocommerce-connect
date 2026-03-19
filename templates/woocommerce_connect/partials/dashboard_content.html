@@ -1,0 +1,168 @@
+{% load djicons i18n %}
+
+<div class="p-4">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold">{% trans "WooCommerce" %}</h1>
+        <p class="text-sm mt-1 opacity-60">{% trans "Sync products, inventory, orders and customers with your WooCommerce store" %}</p>
+    </div>
+
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                        {% icon "link-outline" css_class="text-xl text-primary" %}
+                    </div>
+                    <div>
+                        <div class="text-xs opacity-60">{% trans "Status" %}</div>
+                        {% if connection %}
+                            {% if connection.status == 'connected' %}
+                                <span class="badge color-success">{% trans "Connected" %}</span>
+                            {% elif connection.status == 'syncing' %}
+                                <span class="badge color-warning">{% trans "Syncing" %}</span>
+                            {% elif connection.status == 'error' %}
+                                <span class="badge color-error">{% trans "Error" %}</span>
+                            {% else %}
+                                <span class="badge">{% trans "Disconnected" %}</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="badge">{% trans "Not configured" %}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                        {% icon "git-compare-outline" css_class="text-xl text-primary" %}
+                    </div>
+                    <div>
+                        <div class="text-xs opacity-60">{% trans "Mapped Entities" %}</div>
+                        <div class="text-xl font-semibold">{{ total_mappings }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-warning/10 rounded-xl flex items-center justify-center">
+                        {% icon "hourglass-outline" css_class="text-xl text-warning" %}
+                    </div>
+                    <div>
+                        <div class="text-xs opacity-60">{% trans "Pending Sync" %}</div>
+                        <div class="text-xl font-semibold">{{ pending_queue }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                        {% icon "time-outline" css_class="text-xl text-primary" %}
+                    </div>
+                    <div>
+                        <div class="text-xs opacity-60">{% trans "Last Sync" %}</div>
+                        {% if connection and connection.last_sync_at %}
+                            <div class="text-sm font-semibold">{{ connection.last_sync_at|timesince }} {% trans "ago" %}</div>
+                        {% else %}
+                            <div class="text-sm opacity-60">{% trans "Never" %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{% trans "Quick Actions" %}</h3>
+        </div>
+        <div class="list list-inset">
+            <a class="list-item list-item-clickable"
+               hx-get="{% url 'woocommerce_connect:connection' %}"
+               hx-target="#main-content-area"
+               hx-push-url="true">
+                <div class="list-item-start">
+                    <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                        {% icon "link-outline" css_class="text-xl text-primary" %}
+                    </div>
+                </div>
+                <div class="list-item-content">
+                    <div class="list-item-label">{% trans "Manage Connection" %}</div>
+                    <div class="list-item-note">{% trans "Configure your WooCommerce store connection" %}</div>
+                </div>
+                <div class="list-item-end">
+                    <span class="list-item-chevron">{% icon "chevron-forward-outline" %}</span>
+                </div>
+            </a>
+            <a class="list-item list-item-clickable"
+               hx-get="{% url 'woocommerce_connect:log' %}"
+               hx-target="#main-content-area"
+               hx-push-url="true">
+                <div class="list-item-start">
+                    <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                        {% icon "list-outline" css_class="text-xl text-primary" %}
+                    </div>
+                </div>
+                <div class="list-item-content">
+                    <div class="list-item-label">{% trans "View Sync Log" %}</div>
+                    <div class="list-item-note">{% trans "Check recent synchronization activity" %}</div>
+                </div>
+                <div class="list-item-end">
+                    <span class="list-item-chevron">{% icon "chevron-forward-outline" %}</span>
+                </div>
+            </a>
+            <a class="list-item list-item-clickable"
+               hx-get="{% url 'woocommerce_connect:mapping' %}"
+               hx-target="#main-content-area"
+               hx-push-url="true">
+                <div class="list-item-start">
+                    <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                        {% icon "git-compare-outline" css_class="text-xl text-primary" %}
+                    </div>
+                </div>
+                <div class="list-item-content">
+                    <div class="list-item-label">{% trans "Entity Mappings" %}</div>
+                    <div class="list-item-note">{% trans "View synced entities between ERPlora and WooCommerce" %}</div>
+                </div>
+                <div class="list-item-end">
+                    <span class="list-item-chevron">{% icon "chevron-forward-outline" %}</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    {% if recent_logs %}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h3 class="card-title">{% trans "Recent Activity" %}</h3>
+        </div>
+        <div class="list list-inset">
+            {% for log in recent_logs %}
+            <div class="list-item">
+                <div class="list-item-content">
+                    <div class="list-item-label">{{ log.entity_type }} / {{ log.action }}</div>
+                    <div class="list-item-note">{{ log.created_at|timesince }} {% trans "ago" %}</div>
+                </div>
+                <div class="list-item-end">
+                    {% if log.status == 'completed' %}
+                        <span class="badge badge-sm color-success">{{ log.status }}</span>
+                    {% elif log.status == 'failed' %}
+                        <span class="badge badge-sm color-error">{{ log.status }}</span>
+                    {% else %}
+                        <span class="badge badge-sm">{{ log.status }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>

@@ -1,0 +1,115 @@
+{% load djicons i18n %}
+
+<div class="p-4">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold">{% trans "Connection" %}</h1>
+        <p class="text-sm mt-1 opacity-60">{% trans "Configure your WooCommerce store connection" %}</p>
+    </div>
+
+    {% if connection and connection.status == 'connected' %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3 class="card-title">{% icon "link-outline" css_class="text-primary" %} {% trans "Connected Store" %}</h3>
+            <span class="badge color-success">{% trans "Connected" %}</span>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <div class="text-xs opacity-60 mb-1">{% trans "Store Name" %}</div>
+                    <div class="font-medium">{{ connection.name }}</div>
+                </div>
+                <div>
+                    <div class="text-xs opacity-60 mb-1">{% trans "Store URL" %}</div>
+                    <div class="font-medium">{{ connection.store_url }}</div>
+                </div>
+                <div>
+                    <div class="text-xs opacity-60 mb-1">{% trans "API Version" %}</div>
+                    <div class="font-medium">{{ connection.api_version }}</div>
+                </div>
+                <div>
+                    <div class="text-xs opacity-60 mb-1">{% trans "Last Sync" %}</div>
+                    <div class="font-medium">
+                        {% if connection.last_sync_at %}
+                            {{ connection.last_sync_at|timesince }} {% trans "ago" %}
+                        {% else %}
+                            {% trans "Never" %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer flex justify-between items-center">
+            <form hx-post="{% url 'woocommerce_connect:trigger_sync' %}"
+                  hx-target="#main-content-area">
+                {% csrf_token %}
+                <input type="hidden" name="entity_type" value="products">
+                <button type="submit" class="btn btn-sm color-primary">
+                    {% icon "sync-outline" %}
+                    {% trans "Sync Now" %}
+                </button>
+            </form>
+            <form hx-post="{% url 'woocommerce_connect:connection_disconnect' %}"
+                  hx-target="#main-content-area"
+                  hx-confirm="{% trans 'Are you sure you want to disconnect? API credentials will be cleared.' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm color-error">
+                    {% icon "close-circle-outline" %}
+                    {% trans "Disconnect" %}
+                </button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{% icon "link-outline" css_class="text-primary" %} {% trans "Connect to WooCommerce" %}</h3>
+        </div>
+        <div class="card-body">
+            <div class="callout callout-info mb-4">
+                <div class="callout-icon">{% icon "information-circle-outline" %}</div>
+                <div class="callout-content">
+                    <span class="callout-text">{% trans "Generate REST API keys in your WooCommerce store under Settings > Advanced > REST API." %}</span>
+                </div>
+            </div>
+            <form hx-post="{% url 'woocommerce_connect:connection_connect' %}"
+                  hx-target="#main-content-area"
+                  class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label class="label">{% trans "Store Name" %}</label>
+                    <input type="text" name="name" class="input input-sm w-full"
+                           placeholder="{% trans 'My WooCommerce Store' %}"
+                           value="{{ connection.name|default:'' }}">
+                </div>
+                <div>
+                    <label class="label">{% trans "Store URL" %}</label>
+                    <input type="url" name="store_url" class="input input-sm w-full" required
+                           placeholder="https://yourstore.com"
+                           value="{{ connection.store_url|default:'' }}">
+                </div>
+                <div>
+                    <label class="label">{% trans "Consumer Key" %}</label>
+                    <input type="text" name="consumer_key" class="input input-sm w-full" required
+                           placeholder="ck_...">
+                </div>
+                <div>
+                    <label class="label">{% trans "Consumer Secret" %}</label>
+                    <input type="password" name="consumer_secret" class="input input-sm w-full" required
+                           placeholder="cs_...">
+                </div>
+                <div>
+                    <label class="label">{% trans "API Version" %}</label>
+                    <input type="text" name="api_version" class="input input-sm w-full"
+                           value="{{ connection.api_version|default:'wc/v3' }}">
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" class="btn color-primary">
+                        {% icon "link-outline" %}
+                        {% trans "Connect" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+</div>
