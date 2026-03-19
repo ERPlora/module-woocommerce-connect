@@ -22,6 +22,11 @@ NAVIGATION = [
     {'label': _('Settings'), 'icon': 'settings-outline', 'id': 'settings'},
 ]
 
+PRICING = {
+    'type': 'subscription',
+    'subscription_price_monthly': 12.99,
+}
+
 DEPENDENCIES = ['inventory', 'customers', 'ecommerce']
 
 PERMISSIONS = [
