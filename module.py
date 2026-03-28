@@ -7,6 +7,7 @@ MODULE_ICON = 'material:store'
 MODULE_DESCRIPTION = _('Sync products, inventory, orders and customers with your WooCommerce store')
 MODULE_AUTHOR = 'ERPlora'
 MODULE_CATEGORY = 'integrations'
+HAS_MODELS = True
 
 MENU = {
     'label': _('WooCommerce'),
